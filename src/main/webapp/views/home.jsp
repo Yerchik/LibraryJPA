@@ -5,69 +5,52 @@
   Time: 4:02
   To change this template use File | Settings | File Templates.
 --%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <title>Title</title>
 </head>
 <body>
-<h1>Hello</h1>
-<h1 id="credentials"></h1>
-<sec:authorize access="hasRole('ROLE_USER')">
+<h1>Library</h1>
     <div>
-        <p><a href="#" onclick="addShow()">Add</a></p>
+        <p><a href="#" onclick="addShow()">Add book</a></p>
         <div id="add" hidden>
-            <label for="amount">Amount:</label>
-            <input name="amount" id="amount" type="number"> <br>
+            <label for="author">Author:</label>
+            <input name="author" id="author" type="text"> <br>
 
-            <label for="description">Description:</label>
-            <input name="description" id="description" type="text"><br>
-
-            <label for="year">Year:</label>
-            <select name="year" id="year">
-            </select>
-            <label for="month">Month:</label>
-            <select name="month" id="month">
-            </select>
-            <label for="day">Day:</label>
-            <select name="day" id="day">
-            </select><br>
-
-            <label for="currencyMarking">select a currency: <select name="currencyMarking" id="currencyMarking">
-            </select></label><br>
+            <label for="name">Name:</label>
+            <input name="name" id="name" type="text"><br>
+            <br>
             <div id="errorMessage"></div>
-            <button id="addButton" onclick="addSpending()">Add!</button>
+            <button id="addButton" onclick="addBook()">Add!</button>
         </div>
-        <p><a href="#" onclick="listShow()">List</a></p>
+        <p><a href="#" onclick="listShow()">All books</a></p>
         <div id="list" hidden>
-            <div id="alldates">
+            <div id="allbooks">
 
 
             </div>
         </div>
-        <p><a href="#" onclick="clearShow()">Clear</a></p>
-        <div id="clear" hidden>
-            <label for="date">Select date:</label>
-            <select name="date" id="date"></select>
+        <p><a href="#" onclick="removeBook()">Remove book</a></p>
+        <div id="remove" hidden>
+            <label for="book">Select book:</label>
+            <select name="book" id="book"></select>
             <br>
-            <button id="clearButton" onclick="clearDate()">Clear!</button>
+            <button id="clearButton" onclick="removeBook2()">Remove!</button>
         </div>
-        <p>Total by <label for="currencyTotal"><select name="currencyTotal" id="currencyTotal">
-        </select></label></p>
-        <div id="total" hidden></div>
-    </div>
-</sec:authorize>
-<sec:authorize access="hasRole('ROLE_ADMIN')">
-<p>Add currency</p>
-<label for="type">type:</label>
-<input name="type" id="type">
-<label for="marking">marking:</label>
-<input name="marking" id="marking">
-    <button id="addcurrency" onclick="addCurrency()">Add!</button>
-    </sec:authorize>
 
-    <p><a href="/sign-in?logout">logout</a></p>
+        <p><a href="#" onclick="editBook()">Edit book</a></p>
+        <div id="edit" hidden>
+            <label for="editbook">Select book:</label>
+            <select name="editbook" id="editbook"></select>
+            <br>
+            <label for="newName">New name:</label>
+            <input name="newName" id="newName" type="text"><br>
+            <button id="editButton" onclick="editBook2()">Edit!</button>
+        </div>
+
+    </div>
+
 
 
     <script src="/resources/JS/js/jquery-1.11.1.min.js"></script>

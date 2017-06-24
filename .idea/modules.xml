@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Test_JPA.iml" filepath="$PROJECT_DIR$/Test_JPA.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Library JPA.iml" filepath="$PROJECT_DIR$/Library JPA.iml" />
     </modules>
   </component>
 </project>

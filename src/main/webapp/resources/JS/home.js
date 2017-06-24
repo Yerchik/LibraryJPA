@@ -2,172 +2,51 @@
  * Created by Yerchik on 24.05.2017.
  */
 
-$(document).ready(function () {
-
-    $.ajax({
-        url: '/user/info',
-        method: 'GET',
-        contentType: 'application/json',
-        success: function (response) {
-            $("#credentials").text(response.name + " " + response.secondName);
-        }
-    })
-
-    $.ajax({
-        url: '/getAllCurrency',
-        method: 'GET',
-        contentType: 'application/json',
-        success: function (response) {
-            var s1 = document.querySelector("#currencyMarking").options;
-            var s2 = document.querySelector("#currencyTotal").options;
-            for (var i = 0; i < s1.length; i++) {
-                s1[i] = null;
-            }
-            for (var i = 0; i < s2.length; i++) {
-                s2[i] = null;
-            }
-            for (var j = 0; j < response.length; j++) {
-                s1[j + 1] = new Option(response[j].typeOfCurrency, response[j].marking, true);
-                s2[j + 1] = new Option(response[j].marking, response[j].typeOfCurrency, true);
-            }
-
-        }
-    })
-    date();
-
-
-})
-
-function date() {
-    var s1 = document.querySelector("#year").options;
-    var s2 = document.querySelector("#month").options;
-
-    for (var i = 1; i < 4; i++) {
-        s1[i] = new Option(2015 + i, 2015 + i, true);
-    }
-
-    for (var i = 1; i < 13; i++) {
-        s2[i] = new Option(i, i, true);
-    }
-}
-
-$("#month").on('change', function () {
-    var s = document.querySelector("#day").options;
-    if (document.getElementById('month').value == 1 || document.getElementById('month').value == 3 || document.getElementById('month').value == 5
-        || document.getElementById('month').value == 7 || document.getElementById('month').value == 8 || document.getElementById('month').value == 10
-        || document.getElementById('month').value == 12) {
-        clearDay();
-        for (var i = 1; i < 32; i++) {
-            s[i] = new Option(i, i, true);
-        }
-    }
-    else if (document.getElementById('month').value == 2) {
-        clearDay();
-        for (var i = 1; i < 29; i++) {
-            s[i] = new Option(i, i, true);
-        }
-    }
-    else {
-        clearDay();
-        for (var i = 1; i < 31; i++) {
-            s[i] = new Option(i, i, true);
-        }
-    }
-})
-function clearDay() {
-    var s = document.querySelector("#day").options;
-    for (var i = 1; i <= s.length; i++) {
-        s[i] = null;
-    }
-
-}
-
 function addShow() {
+    cleanErrorMessages()
     clearAdd();
     $("#add").slideToggle(300);
-
 }
 
-function listShow() {
-    $("#alldates").empty();
-    $.ajax({
-        url: '/getAllDates',
-        method: 'GET',
-        contentType: 'application/json',
-        success: function (response) {
-            for (var i = 0; i < response.length; i++) {
-                getListByDate(response[i]);
-            }
-            $("#list").slideToggle();
-        }
-    })
+function clearAdd() {
+    document.getElementById('author').value = '';
+    document.getElementById('name').value = '';
 }
 
-function getListByDate(date) {
-    $.ajax({
-        url: '/getByDates/' + date,
-        method: 'GET',
-        contentType: 'application/json',
-        success: function (response2) {
-            $("#alldates").append(date + "<br>");
-            for (var i = 0; i < response2.length; i++) {
-                $("#alldates").append(response2[i].amount + " " + response2[i].currency + " " + response2[i].description + "<br>");
-            }
-        }
-    })
-}
-
-function clearShow() {
-    var s = document.querySelector("#date").options;
-    for (var i = 1; i <= s.length; i++) {
-        s[i] = null;
-    }
-    $.ajax({
-        url: '/getAllDates',
-        method: 'GET',
-        contentType: 'application/json',
-        success: function (response) {
-            for (var i = 0; i < response.length; i++) {
-                s[i + 1] = new Option(response[i], response[i], true);
-            }
-            $("#clear").slideToggle(300);
-        }
-    })
-}
-
-function addSpending() {
+function addBook() {
     if (validateAdd()) {
         $.ajax({
             url: '/add/',
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify(getSpending()),
+            data: JSON.stringify(getBook()),
             success: function () {
                 cleanErrorMessages();
                 alert('Added!')
                 $("#add").hide();
+                $("#list").hide();
+                $("#edit").hide();
             }
         });
     }
 }
-
-function getSpending() {
-    return {
-        amount: $("#amount").val(), year: $("#year").val(), month: $("#month").val(), day: $("#day").val(),
-        description: $("#description").val(), currency: $("#currencyMarking").val()
-    };
-}
-
 function validateAdd() {
-    var object = getSpending();
-    if (object.amount != '' && object.year != '' && object.currency != '' && object.day != '' &&
-        object.description != '' && object.month != '') {
+    var object = getBook();
+    if (object.author != '' && object.name != '' ) {
         return true;
     }
     else {
         showErrorMessage();
+        return false;
     }
 }
+
+function getBook() {
+    return {
+        author: $("#author").val(), name: $("#name").val()
+    };
+}
+
 function showErrorMessage() {
 
     var html = "<div >"
@@ -181,67 +60,94 @@ function cleanErrorMessages() {
     $("#errorMessage").empty();
 }
 
-function clearAdd() {
-    document.getElementById('amount').value = '';
-    document.getElementById('year').value = '';
-    document.getElementById('month').value = '';
-    document.getElementById('day').value = '';
-    document.getElementById('description').value = '';
-    document.getElementById('currencyMarking').value = '';
-}
 
-
-function clearDate() {
+function listShow() {
+    $("#allbooks").empty();
     $.ajax({
-        url: '/clearDate/' + document.getElementById('date').value,
-        method: 'POST',
+        url: '/getAllBooks',
+        method: 'GET',
         contentType: 'application/json',
-        success: function () {
-            alert('Date cleared')
-            $("#clear").hide();
+        success: function (response) {
+            for (var i = 0; i < response.length; i++) {
+                $("#allbooks").append((i + 1) + ". \"" + response[i].author + " " + response[i].name + "\" <br>")
+            }
+            $("#list").slideToggle();
         }
     })
 }
 
-$("#currencyTotal").on('change', function () {
-    $("#total").empty()
-    if (document.getElementById('currencyTotal').value != '') {
+function removeBook(){
+    clearBook();
+    var s = document.querySelector("#book").options;
+    $.ajax({
+        url: '/getAllBooks',
+        method: 'GET',
+        contentType: 'application/json',
+        success: function (response) {
+            for (var i = 0; i < response.length; i++) {
+                s[i + 1] = new Option(response[i].author + " \"" + response[i].name + "\"", response[i].author + "," + response[i].name, true);
+            }
+            $("#remove").slideToggle(300);
+        }
+    })
+
+
+}
+function clearBook() {
+    var s = document.querySelector("#book").options;
+    var s1 = document.querySelector("#editbook").options;
+    for (var i = 1; i <= s.length; i++) {
+        s[i] = null;
+    }
+    for (var i = 1; i <= s1.length; i++) {
+        s1[i] = null;
+    }
+}
+
+function removeBook2() {
+    if(document.getElementById('book').value != '') {
         $.ajax({
-            url: '/total/' + document.getElementById('currencyTotal').value,
-            method: 'GET',
+            url: '/remove/' + document.getElementById('book').value,
+            method: 'POST',
             contentType: 'application/json',
-            success: function (response) {
-                $("#total").append(response);
-                $("#total").show(300);
+            success: function () {
+                alert('Book removed')
+                $("#remove").hide();
+                $("#list").hide();
+                $("#edit").hide();
+
             }
         })
     }
-})
+}
+function editBook(){
+    clearBook();
+    var s = document.querySelector("#editbook").options;
+    $.ajax({
+        url: '/getAllBooks',
+        method: 'GET',
+        contentType: 'application/json',
+        success: function (response) {
+            for (var i = 0; i < response.length; i++) {
+                s[i + 1] = new Option(response[i].author + " \"" + response[i].name + "\"", response[i].author + "," + response[i].name, true);
+            }
+            $("#edit").slideToggle(300);
+        }
+    })
+}
 
-function addCurrency() {
-    if (validateCurrency()) {
+function editBook2() {
+    if(document.getElementById('editbook').value != '' && document.getElementById('newName').value != '') {
         $.ajax({
-            url: '/addCurrency',
+            url: '/edit/' + document.getElementById('editbook').value + ',' + document.getElementById('newName').value,
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify(getCurrency()),
             success: function () {
-                alert("Added!")
+                alert('Book edited')
+                $("#remove").hide();
+                $("#list").hide();
+                $("#edit").hide();
             }
-        });
-    }
-}
-
-function getCurrency() {
-    return {typeOfCurrency: $("#type").val(), marking: $("#marking").val()}
-}
-
-function validateCurrency() {
-    var object = getCurrency();
-    if (object.marking != "" && object.typeOfCurrency != "") {
-        return true
-    }
-    else {
-        return false;
+        })
     }
 }
